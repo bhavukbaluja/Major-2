@@ -2,14 +2,14 @@ import bcrypt
 
 
 def welcome():
-    print("Welcome to your dashboard")
+    print("Welcome to the Dashboard!!")
 
 
-def gainAccess(Username=None, Password=None):
-    Username = input("Enter your username:")
-    Password = input("Enter your Password:")
+def gainAccess(id=None, p=None):
+    id = input("Enter your username:")
+    p = input("Enter your Password:")
 
-    if not len(Username or Password) < 1:
+    if not len(id or p) < 1:
         if True:
             db = open("database.txt", "r")
             d = []
@@ -22,22 +22,22 @@ def gainAccess(Username=None, Password=None):
                 f.append(b)
                 data = dict(zip(d, f))
             try:
-                if Username in data:
-                    hashed = data[Username].strip('b')
+                if id in data:
+                    hashed = data[id].strip('b')
                     hashed = hashed.replace("'", "")
                     hashed = hashed.encode('utf-8')
 
                     try:
-                        if bcrypt.checkpw(Password.encode(), hashed):
+                        if bcrypt.checkpw(p.encode(), hashed):
 
                             print("Login success!")
-                            print("Hi", Username)
+                            print("Hi", id)
                             welcome()
                         else:
-                            print("Wrong password")
+                            print("Wrong Password!")
 
                     except:
-                        print("Incorrect passwords or username")
+                        print("Incorrect Password or Username")
                 else:
                     print("Username doesn't exist")
             except:
@@ -49,15 +49,21 @@ def gainAccess(Username=None, Password=None):
         print("Please attempt login again")
         gainAccess()
 
+    print("Do you want to continue?")
+    option = input("Yes/No?")
+    if option == "Yes" or option=="y" or option=="Y":
+        home()
+    else:
+        print("Thank you for using this application!")
     # b = b.strip()
 
 
 # accessDb()
 
-def register(Username=None, Password1=None, Password2=None):
-    Username = input("Enter a username:")
-    Password1 = input("Create password:")
-    Password2 = input("Confirm Password:")
+def register(id=None, P1=None, P2=None):
+    id = input("Enter a username:")
+    P1 = input("Create password:")
+    P2 = input("Confirm Password:")
     db = open("database.txt", "r")
     d = []
     for i in db:
@@ -65,45 +71,48 @@ def register(Username=None, Password1=None, Password2=None):
         b = b.strip()
         c = a, b
         d.append(a)
-    if not len(Password1) <= 3:
+    if not len(P1) <= 3:
         db = open("database.txt", "r")
-        if not Username == None:
-            if len(Username) < 1:
+        if not id == None:
+            if len(id) < 1:
                 print("Please provide a username")
                 register()
-            elif Username in d:
+            elif id in d:
                 print("Username exists")
                 register()
             else:
-                if Password1 == Password2:
-                    Password1 = Password1.encode('utf-8')
-                    Password1 = bcrypt.hashpw(Password1, bcrypt.gensalt())
+                if P1 == P2:
+                    P1 = P1.encode('utf-8')
+                    P1 = bcrypt.hashpw(P1, bcrypt.gensalt())
 
                     db = open("database.txt", "a")
-                    db.write(Username + ", " + str(Password1) + "\n")
+                    db.write(id + ", " + str(P1) + "\n")
                     print("User created successfully!")
-                    print("Please login to proceed:")
+                    print("Please login to proceed!")
 
 
                 # print(texts)
                 else:
-                    print("Passwords do not match")
+                    print("Passwords do not match!")
                     register()
     else:
         print("Password too short")
+    print("Do you want to continue?")
+    option = input("Yes/No?")
+    if option == "Yes" or option=="y" or option=="Y":
+        home()
+    else:
+        print("Thank you for using this application!\nHave a Nice Day!")
 
 
 def home(option=None):
-    print("Welcome, please select an option")
-    option = input("Login | Signup:")
-    if option == "Login":
-        gainAccess()
-    elif option == "Signup":
-        register()
-    else:
-        print("Please enter a valid parameter, this is case-sensitive")
-
-
-# register(Username, Password1, Password2)
-# gainAccess(Username, Password1)
+      print("Welcome, Please select an option")
+      option = input("Select:\n1: Login\n2: Signup\n")
+      if option == "1":
+          gainAccess()
+      elif option == "2":
+          register()
+      else:
+          print("Please enter a valid parameter, this is case-sensitive")
+          home()
 home()
