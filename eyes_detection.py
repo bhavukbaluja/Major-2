@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import glob
 import pickle
-import main
 
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 kernel = np.ones((5,5),np.uint8)
