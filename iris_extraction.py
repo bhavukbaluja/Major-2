@@ -24,7 +24,10 @@ lables = []
 eye_detected_imgs = []
 iris_eye_detected_imgs = []
 
-for filepath in glob.iglob('UBIRIS_200_150/Sessao_1/*'):
+
+# ***** EYE DETECTION ******
+
+for filepath in glob.iglob('UBIRIS_200_150/Sessao_1/'):
     
     num_in_folder = 0
 
@@ -33,7 +36,7 @@ for filepath in glob.iglob('UBIRIS_200_150/Sessao_1/*'):
 
             img = cv2.imread(filefilepath)
             imgs_colored = cv2.imread(filefilepath)
-            img = cv2.resize(img,(200,150))
+            img = cv2.resize(img,(400,300))
 
             img = cv2.cvtColor(img,	cv2.COLOR_BGR2GRAY)
             imgs.append([img,num_in_folder,label,imgs_colored])
@@ -44,7 +47,7 @@ for filepath in glob.iglob('UBIRIS_200_150/Sessao_1/*'):
 eyes_num = 0
 for i, j, L, c in imgs:
 
-    i = cv2.resize(i, (400, 400))
+    # i = cv2.resize(i, (400, 400))
     eyes = eye_cascade.detectMultiScale(i, 1.01, 0)
     if len(eyes) > 1:
         print(eyes_num)
@@ -61,8 +64,14 @@ for i, j, L, c in imgs:
                 point_y = ey
                 maximum_height = eh
 
+        # cv2.rectangle(c, (point_x, point_y), (point_x+maximum_width, +maximum_height), (255, 0, 0), 2)
+
 print("total_eyes_found = ", eyes_num)
 print("total images number ", len(imgs))
+
+
+
+# ***** IRIS DETECTION *****
 
 iris_num = 0
 for i, j, L, c in eye_detected_imgs:
@@ -96,12 +105,15 @@ for i, j, L, c in eye_detected_imgs:
                         point_y = y
                         maximum_average = average
 
-        cv2.imwrite('paper/iris/'+str(L)+'.'+str(j)+'.jpg', c)
+        cv2.imwrite('UBIRIS_200_150/Sessao_1/paper/iris/'+str(L)+'.'+str(j)+'.jpg', c)
         iris_eye_detected_imgs.append(eye_detected_imgs[iris_num])
         iris_num = iris_num+1
 
 print("total_iris_found = ", iris_num)
 print("total images number ", len(imgs))
+# *** IRIS DETECTION END ***
+
+
 
 imgs = iris_eye_detected_imgs
 kernel = np.ones((5, 5), np.uint8)
@@ -120,19 +132,20 @@ for i, j, L, c in imgs:
             print("the image name " + str(j))
             print(" ")
 
-            cv2.imwrite('paper/threshold/'+str(L)+'.'+str(j)+'.jpg', working_img)
-            cv2.imwrite('paper/opening/'+str(L)+'.'+str(j)+'.jpg', opening)
-            cv2.imwrite('paper/closing/'+str(L)+'.'+str(j)+'.jpg', closing)
-
-            contours = cv2.findContours(working_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            cv2.imwrite('UBIRIS_200_150/Sessao_1/paper/threshold/'+str(L)+'.'+str(j)+'.jpg', working_img)
+            cv2.imwrite('UBIRIS_200_150/Sessao_1/paper/opening/'+str(L)+'.'+str(j)+'.jpg', opening)
+            cv2.imwrite('UBIRIS_200_150/Sessao_1/paper/closing/'+str(L)+'.'+str(j)+'.jpg', closing)
+            # print(working_img)
+            contours, hierarchy = cv2.findContours(working_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2:]
             for z in contours:
+                # print(z)
                 x, y, w, h = cv2.boundingRect(z)
                 if x+w < 150 and y+h < 200 and x-w//4 > 0:
                     
-                    cv2.rectangle(working_img,(x,y),(x+w,y+h),(0,255,0),-2)
-                    cv2.imwrite('paper/contour/'+str(L)+'.'+str(j)+'.jpg',working_img)
+                    cv2.rectangle(working_img, (x, y), (x+w, y+h), (0, 255, 0), -2)
+                    cv2.imwrite('UBIRIS_200_150/Sessao_1/paper/contour/'+str(L)+'.'+str(j)+'.jpg', working_img)
 
-                contours = cv2.findContours(working_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                contours, hierarchy = cv2.findContours(working_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2:]
 
             maximum_area = 0
             maximum_area = 0
@@ -158,23 +171,23 @@ for i, j, L, c in imgs:
             if (center_y-radius > 0 and center_x-radius > 0 and center_y+radius < 200 and center_x+radius < 150):
                 new_roi = c[center_y-radius:center_y+radius, center_x-radius:center_x+radius]
                 new_roi = cv2.resize(new_roi, (200, 150))
-                cv2.imwrite('final_iris2/'+str(L)+'.'+str(j)+'.jpg', new_roi)
+                cv2.imwrite('UBIRIS_200_150/Sessao_1/final_iris2/'+str(L)+'.'+str(j)+'.jpg', new_roi)
 
             else:
                 center_y = c.shape[0]//2
                 center_x = c.shape[1]//2
                 new_roi = c[center_y-radius:center_y+radius, center_x-radius:center_x+radius]
                 new_roi = cv2.resize(new_roi, (200, 150))
-                cv2.imwrite('final_iris2/'+str(L)+'.'+str(j)+'.jpg',new_roi)
+                cv2.imwrite('UBIRIS_200_150/Sessao_1/final_iris2/'+str(L)+'.'+str(j)+'.jpg', new_roi)
 
-            cv2.imwrite('edging_5/'+str(L)+'_'+str(j)+'.jpg', i)
+            cv2.imwrite('UBIRIS_200_150/Sessao_1/edging_5/'+str(L)+'_'+str(j)+'.jpg', i)
             test.append(i)
             final_output.append(new_roi)
             lables.append(L)
             break
 
-print("the lenght of final output = ",len(final_output))
-print("the of lables = ",len(lables))
+print("the length of final output = ", len(final_output))
+print("the of lables = ", len(lables))
 
 final_output=np.array(final_output)
 print(final_output.shape)
@@ -182,15 +195,15 @@ print(final_output.shape)
 test=np.array(test)
 print(test.shape)
 
-pickle_out = open("test_ubiris.pickle","wb")
+pickle_out = open("test_ubiris.pickle", "wb")
 pickle.dump(test, pickle_out)
 pickle_out.close()
 
-pickle_out = open("ubiris_features.pickle","wb")
+pickle_out = open("ubiris_features.pickle", "wb")
 pickle.dump(final_output, pickle_out)
 pickle_out.close()
 
-pickle_out = open("ubiris_lables.pickle","wb")
+pickle_out = open("ubiris_lables.pickle", "wb")
 pickle.dump(lables, pickle_out)
 pickle_out.close()         
 

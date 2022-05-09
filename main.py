@@ -1,9 +1,11 @@
 import bcrypt
+import Captures
+import Capturel
+import iris_extraction_for1
 
 
 def welcome():
     print("Welcome to the Dashboard!!")
-
 
 def gainAccess(id=None, p=None):
     id = input("Enter your username:")
@@ -29,15 +31,20 @@ def gainAccess(id=None, p=None):
 
                     try:
                         if bcrypt.checkpw(p.encode(), hashed):
-
-                            print("Login success!")
-                            print("Hi", id)
-                            welcome()
+                            # exec(open('Capturel.py').read())
+                            Capturel.cap(id)
+                            ans = iris_extraction_for1.func1(id)
+                            # print("ans"+str(ans))
+                            if ans == 1:
+                                print("Login success, IRIS Recognition Detected!")
+                                print("Hi", id)
+                                welcome()
+                            else:
+                                print("IRIS Recognition Failed!!!")
                         else:
                             print("Wrong Password!")
-
                     except:
-                        print("Incorrect Password or Username")
+                        print("Incorrect Password or Username or Image")
                 else:
                     print("Username doesn't exist")
             except:
@@ -84,8 +91,9 @@ def register(id=None, P1=None, P2=None):
                 if P1 == P2:
                     P1 = P1.encode('utf-8')
                     P1 = bcrypt.hashpw(P1, bcrypt.gensalt())
-
+                    # exec(open('Captures.py').read())
                     db = open("database.txt", "a")
+                    Captures.cap(id)
                     db.write(id + ", " + str(P1) + "\n")
                     print("User created successfully!")
                     print("Please login to proceed!")
@@ -99,7 +107,7 @@ def register(id=None, P1=None, P2=None):
         print("Password too short")
     print("Do you want to continue?")
     option = input("Yes/No?")
-    if option == "Yes" or option=="y" or option=="Y":
+    if option == "Yes" or option=="y" or option=="Y" or option=="yes":
         home()
     else:
         print("Thank you for using this application!\nHave a Nice Day!")
